@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  php:
+    build: .
+    ports:
+      - "80:80"
+    volumes:
+      - .:/var/www/html
+    networks:
+      - mynetwork
+    depends_on:
+      - db
+
+  db:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: palstine_show
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./palstine_show.sql:/docker-entrypoint-initdb.d/palstine_show.sql
+    networks:
+      - mynetwork
+
+  composer:
+    image: composer:latest
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: ["sleep", "infinity"]
+    networks:
+      - mynetwork
+
+networks:
+  mynetwork:
+
+volumes:
+  db_data:
